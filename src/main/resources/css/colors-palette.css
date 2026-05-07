@@ -1,0 +1,30 @@
+.root {
+  /* Background */
+  -background-light: rgba(255,255,255,0.65);   /* #A6FFFFFF */
+  -background-dark: rgba(35,35,35,0.65);       /* #A6232323 */
+
+  -titlebar-background-light: #FFFFFF;
+  -titlebar-background-dark: #404040;
+
+  /* Borders */
+  -border-light-10: rgba(255,255,255,0.10);
+  -border-light-15: rgba(255,255,255,0.15);
+
+  -border-dark-10: rgba(0,0,0,0.10);
+  -border-dark-15: rgba(0,0,0,0.15);
+
+  /* Window buttons */
+  -close-button: #FC605C;
+  -close-button-pressed: #FD8E87;
+
+  -maximize-button: #FCBB40;
+  -maximize-button-pressed: #FEE767;
+
+  -minimize-button: #34C648;
+  -minimize-button-pressed: #5EF474;
+
+  /* Login button */
+  -login-button: #008DFF;
+  -login-button-hover: #1897FE;
+  -login-button-pressed: #30A0FC;
+}

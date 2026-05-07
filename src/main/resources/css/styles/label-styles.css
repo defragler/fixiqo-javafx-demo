@@ -1,0 +1,19 @@
+/* ROOT */
+.root {
+  -fx-font-size: 14px;
+}
+
+/* TEXT LABELS */
+.label-header {
+  -fx-font-size: 50px;
+  -fx-font-weight: bold;
+}
+
+.label-misc {
+  -fx-font-size: 10px;
+}
+
+.info-area {
+  -fx-background-color: transparent;
+  -fx-border-color: transparent;
+}

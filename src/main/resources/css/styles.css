@@ -1,0 +1,25 @@
+@import "styles/label-styles.css";
+@import "styles/button-styles.css";
+@import "styles/textbox-styles.css";
+@import "styles/tabpane-styles.css";
+@import "styles/tableview-styles.css";
+@import "styles/container-styles.css";
+
+.pointer {
+  -fx-background-color: #269EFF;
+  -fx-background-radius: 5;
+  -fx-pref-height: 30px;
+  -fx-pref-width: 4px;
+  -fx-max-height: 30px;
+  -fx-max-width: 4px;
+}
+
+.pointer-glow {
+  -fx-background-color: #269EFF;
+  -fx-background-radius: 5;
+  -fx-effect: dropshadow(gaussian, #269EFF, 10, 0.5, 0, 0);
+  -fx-pref-height: 30px;
+  -fx-pref-width: 4px;
+  -fx-max-height: 30px;
+  -fx-max-width: 4px;
+}

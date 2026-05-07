@@ -1,0 +1,5 @@
+/* ROOT */
+.text-field, .password-field, .combo-box, .choice-box, .date-picker, .color-picker {
+  -fx-pref-width: 200px;
+  -fx-pref-height: 35px;
+}

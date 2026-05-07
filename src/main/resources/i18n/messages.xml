@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+  
+  <!-- === WINDOWS === -->
+  <!-- Login Window - Section -->
+  <entry key="login-window.welcome-message">Welcome!</entry>
+  <entry key="login-window.username-field">Username</entry>
+  <entry key="login-window.password-field">Password</entry>
+  <entry key="login-window.error-message">Login or password is wrong!</entry>
+  <entry key="login-window.login-button">Sign in</entry>
+  <entry key="login-window.registration-label">Don't have account?</entry>
+  <entry key="login-window.registration-hyperlink">Sign up</entry>
+  <entry key="login-window."></entry>
+
+  <!-- Registration Window - Section -->
+  <entry key="registration-window.registration-message">Registration</entry>
+  <entry key="registration-window.username-field">Username</entry>
+  <entry key="registration-window.password-field">Password</entry>
+  <entry key="registration-window.email-field">Email</entry>
+  <entry key="registration-window.error-message">Login or password is wrong!</entry>
+  <entry key="registration-window.registration-button">Sign up</entry>
+  <entry key="registration-window.login-label">Already have account?</entry>
+  <entry key="registration-window.login-hyperlink">Sign in</entry>
+  <entry key="registration-window."></entry>
+
+  <!-- Main Window - Section -->
+  <entry key="main-window."></entry>
+  
+  
+  <!-- === MODALS === -->
+  <!-- Verification Modal Window - Section -->
+  <entry key="verification-modal-window."></entry>
+
+  <!-- Request Modal Window - Section -->
+  <entry key="request-modal-window."></entry>
+
+  <!-- Client Modal Window - Section -->
+  <entry key="client-modal-window."></entry>
+
+  <!-- Account Modal Window - Section -->
+  <entry key="account-modal-window."></entry>
+
+  <!-- Information Modal Window - Section -->
+  <entry key="information-modal-window."></entry>
+
+  <!-- Settings Modal Window - Section -->
+  <entry key="settings-modal-window."></entry>
+  
+  
+  <!-- === PAGES === -->
+  <!-- Home Page - Section -->
+  <entry key="home-page."></entry>
+  
+  <!-- Clients Page - Section -->
+  <entry key="clients-page."></entry>
+  
+  <!-- Requests Page - Section -->
+  <entry key="requests-page."></entry>
+  
+  <!-- Storage Page - Section -->
+  <entry key="storage-page."></entry>
+  
+  <!-- Browser Page - Section -->
+  <entry key="browser-page."></entry>
+  
+  <!-- Settings Page - Section -->
+  <entry key="settings-page."></entry>
+  
+  <!-- Information Page - Section -->
+  <entry key="information-page."></entry>
+  
+</properties>

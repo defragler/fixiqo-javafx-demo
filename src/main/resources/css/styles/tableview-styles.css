@@ -1,0 +1,18 @@
+/* ROOT */
+.table-view {
+  -fx-border-radius: 5px;
+  -fx-background-radius: 5px;
+}
+
+.table-view .column-header-background {
+  -fx-background-radius: 5px 5px 0 0;
+}
+
+.tree-table-view {
+  -fx-border-radius: 5px;
+  -fx-background-radius: 5px;
+}
+
+.tree-table-view .column-header-background {
+  -fx-background-radius: 5px 5px 0 0;
+}

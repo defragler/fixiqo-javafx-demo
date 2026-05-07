@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<AnchorPane prefHeight="680.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/25"
+  xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="com.defragler.fixiqo.views.controllers.pages.RequestsPageController">
+
+  <!-- Page Content -->
+  <GridPane hgap="5.0" vgap="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <columnConstraints>
+      <ColumnConstraints hgrow="ALWAYS"/>
+    </columnConstraints>
+    <rowConstraints>
+      <RowConstraints vgrow="NEVER"/>
+      <RowConstraints vgrow="NEVER"/>
+      <RowConstraints vgrow="ALWAYS"/>
+    </rowConstraints>
+
+    <!-- Control Panel -->
+    <HBox alignment="CENTER_RIGHT" spacing="5.0">
+      <HBox alignment="CENTER_RIGHT" spacing="2.0">
+        <Button mnemonicParsing="false" onAction="#add" text="Add"/>
+        <Button mnemonicParsing="false" onAction="#edit" text="Edit"/>
+        <Button mnemonicParsing="false" onAction="#delete" text="Delete"/>
+      </HBox>
+      <HBox spacing="2.0">
+        <TextField fx:id="searchField" promptText="Search"/>
+        <Button mnemonicParsing="false" onAction="#search" text="Search"/>
+      </HBox>
+    </HBox>
+
+    <!-- Sorting Tabs -->
+    <TabPane fx:id="statusTabs" tabClosingPolicy="UNAVAILABLE" GridPane.rowIndex="1">
+      <Tab fx:id="tabAll" text="All"/>
+      <Tab fx:id="tabAccepted" text="Accepted"/>
+      <Tab fx:id="tabWaiting" text="Waiting parts"/>
+      <Tab fx:id="tabInProgress" text="In progress"/>
+      <Tab fx:id="tabCompleted" text="Completed"/>
+      <Tab fx:id="tabIssued" text="Issued"/>
+      <Tab fx:id="tabReturned" text="Returned"/>
+    </TabPane>
+
+    <!-- Table -->
+    <TableView fx:id="requestsTable" GridPane.rowIndex="2">
+      <columns>
+        <TableColumn fx:id="requestsIdColumn" prefWidth="40.0" text="№"/>
+        <TableColumn fx:id="requestsClientColumn" prefWidth="200.0" text="Client"/>
+        <TableColumn fx:id="requestsBrandColumn" prefWidth="125.0" text="Device Brand"/>
+        <TableColumn fx:id="requestsModelColumn" prefWidth="150.0" text="Device Model"/>
+        <TableColumn fx:id="requestsStatusColumn" prefWidth="125.0" text="Status"/>
+        <TableColumn fx:id="requestsReceivedColumn" prefWidth="125.0" text="Received"/>
+        <TableColumn fx:id="requestsIssuedColumn" prefWidth="125.0" text="Issued"/>
+      </columns>
+      <columnResizePolicy>
+        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+      </columnResizePolicy>
+    </TableView>
+
+  </GridPane>
+</AnchorPane>

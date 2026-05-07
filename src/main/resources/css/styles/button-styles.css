@@ -1,0 +1,56 @@
+/* ROOT */
+.button {
+  -fx-pref-height: 35px;
+}
+
+/* BASIC BUTTONS */
+.button.control {
+  -fx-pref-width: 150px;
+}
+
+.button.navigation {
+  -fx-pref-width: 200px;
+}
+
+/* ADDITIONAL BUTTONS */
+.button.additional-small {
+  -fx-font-size: 10px;
+  -fx-pref-width: 25px;
+  -fx-pref-height: 25px;
+}
+
+.button.additional-medium {
+  -fx-font-size: 10px;
+  -fx-pref-width: 30px;
+  -fx-pref-height: 30px;
+}
+
+.button.additional-big {
+  -fx-font-size: 10px;
+  -fx-pref-width: 35px;
+  -fx-pref-height: 35px;
+}
+
+.button.additional-huge {
+  -fx-pref-width: 50px;
+  -fx-pref-height: 50px;
+}
+
+.navigation-button {
+  -fx-pref-height: 30px;
+  -fx-pref-wight: 150px;
+  -fx-background-color: transparent;
+  -fx-text-fill: -color-fg-default;
+  -fx-opacity: 0.5;
+}
+
+.navigation-button:hover {
+  -fx-text-fill: -color-fg-default;
+  -fx-effect: dropshadow(gaussian, -color-fg-default, 10, 0.3, 0, 0);
+  -fx-opacity: 1;
+}
+
+.navigation-button:selected {
+  -fx-text-fill: -color-fg-default;
+  -fx-opacity: 1;
+}
