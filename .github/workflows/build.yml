@@ -1,156 +1,223 @@
-name: Build Desktop Releases
+name: Build Fixiqo Installers
 
 on:
-  push:
-    branches:
-      - main
-
   workflow_dispatch:
 
-  release:
-    types: [created]
+  push:
+    tags:
+      - "v*.*.*"
 
 permissions:
   contents: write
 
 jobs:
 
-  build:
+  # =========================================================
+  # WINDOWS
+  # =========================================================
 
-    timeout-minutes: 45
-
-    strategy:
-      fail-fast: false
-
-      matrix:
-        include:
-
-          # WINDOWS
-          - os: windows-latest
-            platform: windows
-            package_type: exe
-
-          # MAC INTEL
-          - os: macos-13
-            platform: mac-intel
-            package_type: dmg
-
-          # MAC ARM
-          - os: macos-14
-            platform: mac-arm
-            package_type: dmg
-
-          # LINUX DEB
-          - os: ubuntu-22.04
-            platform: linux
-            package_type: deb
-
-          # LINUX APP IMAGE
-          - os: ubuntu-22.04
-            platform: appimage
-            package_type: app-image
-
-    runs-on: ${{ matrix.os }}
+  build-windows:
+    runs-on: windows-latest
 
     steps:
 
-      # ----------------------------------------
-      # CHECKOUT
-      # ----------------------------------------
+      - uses: actions/checkout@v4
 
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      # ----------------------------------------
-      # JAVA
-      # ----------------------------------------
-
-      - name: Setup JDK 25
+      - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 25
           cache: maven
 
-      # ----------------------------------------
-      # DEBUG INFO
-      # ----------------------------------------
+      - name: Install WiX Toolset
+        run: choco install wixtoolset --yes
 
-      - name: Java Version
-        shell: bash
-        run: java --version
-
-      - name: Maven Version
-        shell: bash
-        run: mvn --version
-
-      - name: jpackage Version
-        shell: bash
-        run: jpackage --version
-
-      # ----------------------------------------
-      # BUILD
-      # ----------------------------------------
-
-      - name: Build Fat JAR
-        shell: bash
+      - name: Build fat jar
+        shell: powershell
         run: |
           mvn -B clean package -DskipTests
 
-      # ----------------------------------------
-      # VERIFY JAR
-      # ----------------------------------------
+      # ---------------- EXE ----------------
 
-      - name: Verify target
-        shell: bash
-        run: |
-          ls -la target
-
-      # ----------------------------------------
-      # WINDOWS
-      # ----------------------------------------
-
-      - name: Create Windows EXE
-        if: matrix.platform == 'windows'
+      - name: Build EXE installer
         shell: powershell
         run: |
           New-Item -ItemType Directory -Force -Path dist
 
           jpackage `
+            --type exe `
+            --name "Fixiqo" `
+            --app-version "1.0.0" `
+            --vendor "Defragler" `
+            --description "Fixiqo Desktop Application" `
             --input target `
-            --name Fixiqo `
             --main-jar Fixiqo-fat.jar `
             --main-class com.defragler.fixiqo.Launcher `
-            --type exe `
             --dest dist `
-            --icon src/main/resources/icons/logo.ico
+            --icon src/main/resources/icons/logo.ico `
+            --win-dir-chooser `
+            --win-menu `
+            --win-shortcut
 
-      # ----------------------------------------
-      # MACOS
-      # ----------------------------------------
+      - name: Rename EXE
+        shell: powershell
+        run: |
+          Get-ChildItem dist\*.exe | Rename-Item -NewName "Fixiqo-Windows.exe"
 
-      - name: Create macOS DMG
-        if: startsWith(matrix.platform, 'mac')
-        shell: bash
+      # ---------------- MSI ----------------
+
+      - name: Build MSI installer
+        shell: powershell
+        run: |
+          jpackage `
+            --type msi `
+            --name "Fixiqo" `
+            --app-version "1.0.0" `
+            --vendor "Defragler" `
+            --description "Fixiqo Desktop Application" `
+            --input target `
+            --main-jar Fixiqo-fat.jar `
+            --main-class com.defragler.fixiqo.Launcher `
+            --dest dist `
+            --icon src/main/resources/icons/logo.ico `
+            --win-dir-chooser `
+            --win-menu `
+            --win-shortcut
+
+      - name: Rename MSI
+        shell: powershell
+        run: |
+          Get-ChildItem dist\*.msi | Rename-Item -NewName "Fixiqo-Windows.msi"
+
+      - name: Upload Windows installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: Fixiqo-Windows
+          path: |
+            dist/*.exe
+            dist/*.msi
+          compression-level: 0
+
+  # =========================================================
+  # MACOS INTEL
+  # =========================================================
+
+  build-macos-intel:
+    runs-on: macos-15-intel
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: maven
+
+      - name: Build fat jar
+        run: |
+          mvn -B clean package -DskipTests
+
+      - name: Build Intel DMG
         run: |
           mkdir -p dist
 
           jpackage \
+            --type dmg \
+            --name "Fixiqo" \
+            --app-version "1.0.0" \
+            --vendor "Defragler" \
             --input target \
-            --name Fixiqo \
             --main-jar Fixiqo-fat.jar \
             --main-class com.defragler.fixiqo.Launcher \
-            --type dmg \
             --dest dist \
-            --icon src/main/resources/icons/logo.icns
+            --icon src/main/resources/icons/logo.icns \
+            --mac-package-name "Fixiqo" \
+            --mac-package-identifier "com.defragler.fixiqo"
 
-      # ----------------------------------------
-      # LINUX DEPENDENCIES
-      # ----------------------------------------
+      - name: Rename Intel installer
+        run: |
+          mv dist/*.dmg dist/Fixiqo-macOS-Intel.dmg
+
+      - name: Upload Intel macOS installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: Fixiqo-macOS-Intel
+          path: dist/Fixiqo-macOS-Intel.dmg
+          compression-level: 0
+
+  # =========================================================
+  # MACOS APPLE SILICON
+  # =========================================================
+
+  build-macos-apple-silicon:
+    runs-on: macos-14
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: maven
+
+      - name: Build fat jar
+        run: |
+          mvn -B clean package -DskipTests
+
+      - name: Build Apple Silicon DMG
+        run: |
+          mkdir -p dist
+
+          jpackage \
+            --type dmg \
+            --name "Fixiqo" \
+            --app-version "1.0.0" \
+            --vendor "Defragler" \
+            --input target \
+            --main-jar Fixiqo-fat.jar \
+            --main-class com.defragler.fixiqo.Launcher \
+            --dest dist \
+            --icon src/main/resources/icons/logo.icns \
+            --mac-package-name "Fixiqo" \
+            --mac-package-identifier "com.defragler.fixiqo"
+
+      - name: Rename Apple Silicon installer
+        run: |
+          mv dist/*.dmg dist/Fixiqo-macOS-AppleSilicon.dmg
+
+      - name: Upload Apple Silicon installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: Fixiqo-macOS-AppleSilicon
+          path: dist/Fixiqo-macOS-AppleSilicon.dmg
+          compression-level: 0
+
+  # =========================================================
+  # LINUX
+  # =========================================================
+
+  build-linux:
+    runs-on: ubuntu-22.04
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: maven
 
       - name: Install Linux dependencies
-        if: startsWith(matrix.os, 'ubuntu')
-        shell: bash
         run: |
           sudo apt update
 
@@ -160,69 +227,101 @@ jobs:
             rpm \
             libfuse2
 
-      # ----------------------------------------
-      # DEB
-      # ----------------------------------------
+      - name: Build fat jar
+        run: |
+          mvn -B clean package -DskipTests
 
-      - name: Create DEB
-        if: matrix.platform == 'linux'
-        shell: bash
+      # ---------------- DEB ----------------
+
+      - name: Build DEB installer
         run: |
           mkdir -p dist
 
           jpackage \
-            --input target \
-            --name Fixiqo \
-            --main-jar Fixiqo-fat.jar \
-            --main-class com.defragler.fixiqo.Launcher \
             --type deb \
-            --dest dist \
-            --icon src/main/resources/icons/logo.png
-
-      # ----------------------------------------
-      # APP IMAGE
-      # ----------------------------------------
-
-      - name: Create App Image
-        if: matrix.platform == 'appimage'
-        shell: bash
-        run: |
-          mkdir -p dist
-
-          jpackage \
+            --name "fixiqo" \
+            --app-version "1.0.0" \
+            --vendor "Defragler" \
             --input target \
-            --name Fixiqo \
             --main-jar Fixiqo-fat.jar \
             --main-class com.defragler.fixiqo.Launcher \
+            --dest dist \
+            --icon src/main/resources/icons/logo.png \
+            --linux-package-name "fixiqo" \
+            --linux-app-category "Utility" \
+            --linux-shortcut
+
+      # ---------------- APP IMAGE ----------------
+
+      - name: Build App Image
+        run: |
+          jpackage \
             --type app-image \
+            --name "Fixiqo" \
+            --input target \
+            --main-jar Fixiqo-fat.jar \
+            --main-class com.defragler.fixiqo.Launcher \
             --dest dist \
             --icon src/main/resources/icons/logo.png
 
-      # ----------------------------------------
-      # VERIFY DIST
-      # ----------------------------------------
-
-      - name: Verify dist
-        shell: bash
-        run: |
-          ls -la dist || true
-
-      # ----------------------------------------
-      # UPLOAD ARTIFACTS
-      # ----------------------------------------
-
-      - name: Upload Build Artifacts
+      - name: Upload Linux installers
         uses: actions/upload-artifact@v4
         with:
-          name: Fixiqo-${{ matrix.platform }}
-          path: dist/
+          name: Fixiqo-Linux
+          path: |
+            dist/*.deb
+            dist/Fixiqo
+          compression-level: 0
 
-      # ----------------------------------------
-      # RELEASE UPLOAD
-      # ----------------------------------------
+  # =========================================================
+  # RELEASE
+  # =========================================================
 
-      - name: Upload Release Assets
-        if: github.event_name == 'release'
+  publish-release:
+
+    needs:
+      - build-windows
+      - build-macos-intel
+      - build-macos-apple-silicon
+      - build-linux
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+
+      - name: Download all installers
+        uses: actions/download-artifact@v4
+        with:
+          path: installers
+          merge-multiple: true
+
+      - name: Show downloaded files
+        run: |
+          ls -la installers
+
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/**/*
+          name: "Fixiqo ${{ github.ref_name }}"
+          body: |
+            ## Fixiqo ${{ github.ref_name }}
+
+            Desktop installers for multiple platforms.
+
+            ### Included installers
+
+            | Platform | File |
+            |---|---|
+            | Windows | `.exe` |
+            | Windows MSI | `.msi` |
+            | macOS Intel | `.dmg` |
+            | macOS Apple Silicon | `.dmg` |
+            | Linux Ubuntu/Debian | `.deb` |
+            | Linux App Image | `app-image` |
+
+          files: installers/*
+          draft: false
+          prerelease: false
