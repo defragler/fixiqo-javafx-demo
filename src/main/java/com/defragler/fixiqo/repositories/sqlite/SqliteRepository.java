@@ -413,7 +413,7 @@ public abstract class SqliteRepository<T, ID> implements Repository<T, ID> {
                 if (keys.next()) {
                     Object generatedId = keys.getObject(1);
 
-                    setGeneratedId(entity, generatedId); // 👈 ВАЖЛИВО
+                    setGeneratedId(entity, generatedId);
                     putCache(entity);
 
                     return (ID) generatedId;

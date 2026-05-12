@@ -1,0 +1,133 @@
+name: Build Desktop Releases
+
+on:
+  release:
+    types: [created]
+
+permissions:
+  contents: write
+
+jobs:
+
+  build:
+
+    strategy:
+      matrix:
+        include:
+
+          # WINDOWS
+          - os: windows-latest
+            platform: windows
+            package: exe
+
+          # MAC INTEL
+          - os: macos-13
+            platform: mac-intel
+            package: dmg
+
+          # MAC ARM
+          - os: macos-14
+            platform: mac-arm
+            package: dmg
+
+          # LINUX
+          - os: ubuntu-22.04
+            platform: linux
+            package: deb
+
+          # APPIMAGE
+          - os: ubuntu-22.04
+            platform: appimage
+            package: app-image
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - name: Build JAR
+        run: mvn clean package
+
+      # ---------- WINDOWS ----------
+
+      - name: Create Windows EXE
+        if: matrix.platform == 'windows'
+        shell: powershell
+        run: |
+          jpackage `
+            --input target `
+            --name Fixiqo `
+            --main-jar *.jar `
+            --main-class com.defragler.fixiqo.Main `
+            --type exe `
+            --dest dist
+            --icon src/main/resources/icons/logo.ico
+
+      # ---------- MAC ----------
+
+      - name: Create macOS DMG
+        if: startsWith(matrix.platform, 'mac')
+        run: |
+          jpackage \
+            --input target \
+            --name Fixiqo \
+            --main-jar $(ls target/*.jar | xargs -n 1 basename) \
+            --main-class com.defragler.fixiqo.Main \
+            --type dmg \
+            --dest dist
+            --icon src/main/resources/icons/logo.icns
+
+      # ---------- DEB ----------
+
+      - name: Install Linux dependencies
+        if: matrix.platform == 'linux'
+        run: |
+          sudo apt update
+          sudo apt install -y fakeroot dpkg-dev
+
+      - name: Create DEB
+        if: matrix.platform == 'linux'
+        run: |
+          jpackage \
+            --input target \
+            --name Fixiqo \
+            --main-jar $(ls target/*.jar | xargs -n 1 basename) \
+            --main-class com.defragler.fixiqo.Main \
+            --type deb \
+            --dest dist
+            --icon src/main/resources/icons/logo.png
+
+      # ---------- APPIMAGE ----------
+
+      - name: Install AppImage tools
+        if: matrix.platform == 'appimage'
+        run: |
+          sudo apt update
+          sudo apt install -y fakeroot libfuse2
+
+      - name: Create AppImage
+        if: matrix.platform == 'appimage'
+        run: |
+          jpackage \
+            --input target \
+            --name Fixiqo \
+            --main-jar $(ls target/*.jar | xargs -n 1 basename) \
+            --main-class com.defragler.fixiqo.Main \
+            --type app-image \
+            --dest dist
+            --icon src/main/resources/icons/logo.png
+
+      # ---------- UPLOAD ----------
+
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/**/*
