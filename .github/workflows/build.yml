@@ -53,7 +53,7 @@ jobs:
             --description "Fixiqo Desktop Application" `
             --input target `
             --main-jar Fixiqo-fat.jar `
-            --main-class com.defragler.fixiqo.Launcher `
+            --main-class com.defragler.fixiqo.Main `
             --dest dist `
             --win-dir-chooser `
             --win-menu `
@@ -77,7 +77,7 @@ jobs:
             --description "Fixiqo Desktop Application" `
             --input target `
             --main-jar Fixiqo-fat.jar `
-            --main-class com.defragler.fixiqo.Launcher `
+            --main-class com.defragler.fixiqo.Main `
             --dest dist `
             --win-dir-chooser `
             --win-menu `
@@ -130,7 +130,7 @@ jobs:
             --vendor "Defragler" \
             --input target \
             --main-jar Fixiqo-fat.jar \
-            --main-class com.defragler.fixiqo.Launcher \
+            --main-class com.defragler.fixiqo.Main \
             --dest dist \
             --icon src/main/resources/icons/logo.icns \
             --mac-package-name "Fixiqo" \
@@ -180,7 +180,7 @@ jobs:
             --vendor "Defragler" \
             --input target \
             --main-jar Fixiqo-fat.jar \
-            --main-class com.defragler.fixiqo.Launcher \
+            --main-class com.defragler.fixiqo.Main \
             --dest dist \
             --icon src/main/resources/icons/logo.icns \
             --mac-package-name "Fixiqo" \
@@ -242,7 +242,7 @@ jobs:
             --vendor "Defragler" \
             --input target \
             --main-jar Fixiqo-fat.jar \
-            --main-class com.defragler.fixiqo.Launcher \
+            --main-class com.defragler.fixiqo.Main \
             --dest dist \
             --icon src/main/resources/icons/logo.png \
             --linux-package-name "fixiqo" \
@@ -258,7 +258,7 @@ jobs:
             --name "Fixiqo" \
             --input target \
             --main-jar Fixiqo-fat.jar \
-            --main-class com.defragler.fixiqo.Launcher \
+            --main-class com.defragler.fixiqo.Main \
             --dest dist \
             --icon src/main/resources/icons/logo.png
 
