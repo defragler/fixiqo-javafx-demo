@@ -101,16 +101,8 @@ jobs:
   # MACOS INTEL
   # =========================================================
 
-  build-macos:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        include:
-          - os: macos-13
-            arch: intel
-          - os: macos-14
-            arch: arm
+  build-macos-intel:
+    runs-on: macos-15-intel
 
     steps:
 
@@ -124,9 +116,10 @@ jobs:
           cache: maven
 
       - name: Build fat jar
-        run: mvn -B clean package -DskipTests
+        run: |
+          mvn -B clean package -DskipTests
 
-      - name: Build DMG
+      - name: Build Intel DMG
         run: |
           mkdir -p dist
 
@@ -143,15 +136,65 @@ jobs:
             --mac-package-name "Fixiqo" \
             --mac-package-identifier "com.defragler.fixiqo"
 
-      - name: Rename installer
+      - name: Rename Intel installer
         run: |
-          mv dist/*.dmg dist/Fixiqo-macOS-${{ matrix.arch }}.dmg
+          mv dist/*.dmg dist/Fixiqo-macOS-Intel.dmg
 
-      - name: Upload macOS installer
+      - name: Upload Intel macOS installer
         uses: actions/upload-artifact@v4
         with:
-          name: Fixiqo-macOS-${{ matrix.arch }}
-          path: dist/*.dmg
+          name: Fixiqo-macOS-Intel
+          path: dist/Fixiqo-macOS-Intel.dmg
+          compression-level: 0
+
+  # =========================================================
+  # MACOS APPLE SILICON
+  # =========================================================
+
+  build-macos-apple-silicon:
+    runs-on: macos-14
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: maven
+
+      - name: Build fat jar
+        run: |
+          mvn -B clean package -DskipTests
+
+      - name: Build Apple Silicon DMG
+        run: |
+          mkdir -p dist
+
+          jpackage \
+            --type dmg \
+            --name "Fixiqo" \
+            --app-version "1.0" \
+            --vendor "defragler" \
+            --input target/ \
+            --main-jar Fixiqo-fat.jar \
+            --main-class com.defragler.fixiqo.Launcher \
+            --icon src/main/resources/icons/logo.icns \
+            --dest dist/ \
+            --mac-package-name "Fixiqo" \
+            --mac-package-identifier "com.defragler.fixiqo"
+
+      - name: Rename Apple Silicon installer
+        run: |
+          mv dist/*.dmg dist/Fixiqo-macOS-AppleSilicon.dmg
+
+      - name: Upload Apple Silicon installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: Fixiqo-macOS-AppleSilicon
+          path: dist/Fixiqo-macOS-AppleSilicon.dmg
           compression-level: 0
 
   # =========================================================
@@ -236,7 +279,8 @@ jobs:
 
     needs:
       - build-windows
-      - build-macos
+      - build-macos-intel
+      - build-macos-apple-silicon
       - build-linux
 
     runs-on: ubuntu-latest
