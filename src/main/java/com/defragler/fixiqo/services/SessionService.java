@@ -22,7 +22,7 @@ import javafx.stage.*;
  * automatic login restoration.</p>
  */
 public class SessionService implements ISessionService {
-    private static final String SESSION_FILE = "Session.json";
+    private final String SESSION_FILE;
 
     private final ApplicationContext context;
     private SessionContext currentSession;
@@ -30,13 +30,13 @@ public class SessionService implements ISessionService {
     private final IUserService userService;
     private final JsonFileHandler jsonHandler;
 
-    public SessionService(ApplicationContext context,
-          IUserService userService) {
+    public SessionService(ApplicationContext context, IUserService userService) {
         this.context = context;
         this.userService = userService;
+        this.SESSION_FILE = AppPaths.sessionPath().toString();
         this.jsonHandler = new JsonFileHandler(SESSION_FILE);
     }
-
+    
     @Override
     public void saveSession() {
         var user = context.getCurrentUser();

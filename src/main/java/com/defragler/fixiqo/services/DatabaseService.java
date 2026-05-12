@@ -5,6 +5,7 @@ import com.defragler.fixiqo.exceptions.enums.*;
 import com.defragler.fixiqo.services.interfaces.*;
 
 import java.io.*;
+import java.nio.file.*;
 import java.sql.*;
 import java.util.function.*;
 import java.util.logging.*;
@@ -28,10 +29,11 @@ public class DatabaseService implements IDatabaseService {
     public DatabaseService(String dbPath) {
         File dbFile = new File(dbPath);
         File parentDir = dbFile.getParentFile();
-        if (parentDir != null && !parentDir.exists()) {
-            boolean created = parentDir.mkdirs();
-            if (!created) {
-                LOGGER.warning("Failed to create database directory: " + parentDir.getAbsolutePath());
+        if (parentDir != null) {
+            try {
+                Files.createDirectories(parentDir.toPath());
+            } catch (IOException e) {
+                throw new ServiceException(ExceptionLevel.ERROR, "Failed to create database directory: " + parentDir.getAbsolutePath(), e);
             }
         }
         this.url = "jdbc:sqlite:" + dbPath;
