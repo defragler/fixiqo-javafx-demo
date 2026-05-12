@@ -126,13 +126,13 @@ jobs:
           jpackage \
             --type dmg \
             --name "Fixiqo" \
-            --app-version "1.0.0" \
-            --vendor "Defragler" \
-            --input target \
+            --app-version "1.0" \
+            --vendor "defragler" \
+            --input target/ \
             --main-jar Fixiqo-fat.jar \
             --main-class com.defragler.fixiqo.Launcher \
-            --dest dist \
             --icon src/main/resources/icons/logo.icns \
+            --dest dist/ \
             --mac-package-name "Fixiqo" \
             --mac-package-identifier "com.defragler.fixiqo"
 
@@ -176,13 +176,13 @@ jobs:
           jpackage \
             --type dmg \
             --name "Fixiqo" \
-            --app-version "1.0.0" \
-            --vendor "Defragler" \
-            --input target \
+            --app-version "1.0" \
+            --vendor "defragler" \
+            --input target/ \
             --main-jar Fixiqo-fat.jar \
             --main-class com.defragler.fixiqo.Launcher \
-            --dest dist \
             --icon src/main/resources/icons/logo.icns \
+            --dest dist/ \
             --mac-package-name "Fixiqo" \
             --mac-package-identifier "com.defragler.fixiqo"
 
@@ -248,6 +248,19 @@ jobs:
             --linux-package-name "fixiqo" \
             --linux-app-category "Utility" \
             --linux-shortcut
+          
+          jpackage \
+            --type dmg \
+            --name "Fixiqo" \
+            --app-version "1.0" \
+            --vendor "defragler" \
+            --input target/ \
+            --main-jar Fixiqo-fat.jar \
+            --main-class com.defragler.fixiqo.Launcher \
+            --icon src/main/resources/icons/logo.icns \
+            --dest dist/ \
+            --mac-package-name "Fixiqo" \
+            --mac-package-identifier "com.defragler.fixiqo"
 
       # ---------------- APP IMAGE ----------------
 
