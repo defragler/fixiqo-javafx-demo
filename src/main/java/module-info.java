@@ -11,7 +11,6 @@ module com.defragler.fixiqo {
     requires eu.hansolo.tilesfx;
     requires eu.hansolo.fx.countries;
     requires eu.hansolo.toolbox;
-    requires com.almasb.fxgl.all;
     
     requires org.xerial.sqlitejdbc;
     requires jakarta.mail;
