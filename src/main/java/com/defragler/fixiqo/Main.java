@@ -53,7 +53,7 @@ public class Main extends Application {
         context.registerSingleton(IOptionRepository.class, () -> new OptionRepository(context.get(IDatabaseService.class)));
 
         // Basic Services
-        context.registerSingleton(IDatabaseService.class, () -> new DatabaseService(System.getenv("DB_PATH")));
+        context.registerSingleton(IDatabaseService.class, () -> new DatabaseService("data/Database.db"));
         context.registerSingleton(Initializer.class, () -> new InitializerService(context.get(IDatabaseService.class)));
         context.registerSingleton(ISessionService.class, () -> new SessionService(context, context.get(IUserService.class)));
         context.registerSingleton(ICommunicationService.class, () -> context.get(CommunicationService.class));

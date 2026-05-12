@@ -22,7 +22,7 @@ import javafx.stage.*;
  * automatic login restoration.</p>
  */
 public class SessionService implements ISessionService {
-    private static final String SESSION_FILE = System.getenv("SESSION_PATH");
+    private static final String SESSION_FILE = "Session.json";
 
     private final ApplicationContext context;
     private SessionContext currentSession;

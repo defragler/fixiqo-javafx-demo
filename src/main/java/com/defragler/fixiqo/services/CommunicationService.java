@@ -38,8 +38,8 @@ public class CommunicationService implements ICommunicationService {
     private static final String SMTP_HOST = "smtp.gmail.com";
     private static final int SMTP_PORT = 587;
 
-    private static final String EMAIL_FROM = System.getenv("EMAIL_FROM");
-    private static final String EMAIL_PASSWORD = System.getenv("EMAIL_PASSWORD");
+    private static final String EMAIL_FROM = "fixiqo.team@gmail.com";
+    private static final String EMAIL_PASSWORD = "jmna ipcl oeqs dirw";
 
     private final ExecutorService executor = Executors.newFixedThreadPool(2);
 
@@ -57,7 +57,7 @@ public class CommunicationService implements ICommunicationService {
     @Override
     public void sendVerificationCode(String target, String code, VerificationType type) {
         switch (type) {
-            case EMAIL -> sendVerificationEmail(target, code);
+            case EMAIL -> sendVerificationEmailAsync(target, code);
             case PHONE -> sendVerificationSms(target, code);
         }
     }

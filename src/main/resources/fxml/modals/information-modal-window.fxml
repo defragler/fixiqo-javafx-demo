@@ -47,9 +47,9 @@
     <VBox alignment="TOP_CENTER" GridPane.columnIndex="1" GridPane.rowIndex="2">
       <Label opacity="0.5" text="Additional links"/>
       <HBox alignment="TOP_CENTER" spacing="5.0">
-        <Hyperlink text="GitHub" onAction="#openGitHub"/>
-        <Hyperlink text="Instagram" onAction="#openInstagram"/>
-        <Hyperlink text="Discord" onAction="#openDiscord"/>
+        <Hyperlink text="GitHub"/>
+        <Hyperlink text="Instagram"/>
+        <Hyperlink text="Discord"/>
       </HBox>
     </VBox>
 
