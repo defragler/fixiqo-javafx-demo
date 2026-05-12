@@ -99,11 +99,21 @@
       <groupId>com.github.almasb</groupId>
       <artifactId>fxgl</artifactId>
       <version>17.3</version>
+
       <exclusions>
+
+        <!-- JavaFX -->
         <exclusion>
           <groupId>org.openjfx</groupId>
           <artifactId>*</artifactId>
         </exclusion>
+
+        <!-- FXGL samples -->
+        <exclusion>
+          <groupId>com.github.almasb</groupId>
+          <artifactId>fxgl-samples</artifactId>
+        </exclusion>
+
       </exclusions>
     </dependency>
     <dependency>
@@ -179,17 +189,7 @@
           <target>25</target>
         </configuration>
       </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.13.0</version>
-        <configuration>
-          <source>25</source>
-          <target>25</target>
-        </configuration>
-      </plugin>
-
+      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
@@ -236,7 +236,7 @@
             <!-- Default configuration for running with: mvn clean javafx:run -->
             <id>default-cli</id>
             <configuration>
-              <mainClass>com.defragler.fixiqo/com.defragler.fixiqo.Main</mainClass>
+              <mainClass>com.defragler.fixiqo/com.defragler.fixiqo.Launcher</mainClass>
               <launcher>app</launcher>
               <jlinkZipName>app</jlinkZipName>
               <jlinkImageName>app</jlinkImageName>
