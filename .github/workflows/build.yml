@@ -17,123 +17,212 @@ jobs:
 
   build:
 
+    timeout-minutes: 45
+
     strategy:
+      fail-fast: false
+
       matrix:
         include:
 
           # WINDOWS
           - os: windows-latest
             platform: windows
-            package: exe
+            package_type: exe
 
           # MAC INTEL
           - os: macos-13
             platform: mac-intel
-            package: dmg
+            package_type: dmg
 
           # MAC ARM
           - os: macos-14
             platform: mac-arm
-            package: dmg
+            package_type: dmg
 
-          # LINUX
+          # LINUX DEB
           - os: ubuntu-22.04
             platform: linux
-            package: deb
+            package_type: deb
 
-          # APPIMAGE
+          # LINUX APP IMAGE
           - os: ubuntu-22.04
             platform: appimage
-            package: app-image
+            package_type: app-image
 
     runs-on: ${{ matrix.os }}
 
     steps:
 
+      # ----------------------------------------
+      # CHECKOUT
+      # ----------------------------------------
+
       - name: Checkout
         uses: actions/checkout@v4
+
+      # ----------------------------------------
+      # JAVA
+      # ----------------------------------------
 
       - name: Setup JDK 25
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 25
+          cache: maven
 
-      - name: Build JAR
-        run: mvn clean package
+      # ----------------------------------------
+      # DEBUG INFO
+      # ----------------------------------------
 
-      # ---------- WINDOWS ----------
+      - name: Java Version
+        shell: bash
+        run: java --version
+
+      - name: Maven Version
+        shell: bash
+        run: mvn --version
+
+      - name: jpackage Version
+        shell: bash
+        run: jpackage --version
+
+      # ----------------------------------------
+      # BUILD
+      # ----------------------------------------
+
+      - name: Build Fat JAR
+        shell: bash
+        run: |
+          mvn -B clean package -DskipTests
+
+      # ----------------------------------------
+      # VERIFY JAR
+      # ----------------------------------------
+
+      - name: Verify target
+        shell: bash
+        run: |
+          ls -la target
+
+      # ----------------------------------------
+      # WINDOWS
+      # ----------------------------------------
 
       - name: Create Windows EXE
         if: matrix.platform == 'windows'
         shell: powershell
         run: |
+          New-Item -ItemType Directory -Force -Path dist
+
           jpackage `
             --input target `
             --name Fixiqo `
-            --main-jar *.jar `
-            --main-class com.defragler.fixiqo.Main `
+            --main-jar Fixiqo-fat.jar `
+            --main-class com.defragler.fixiqo.Launcher `
             --type exe `
             --dest dist `
             --icon src/main/resources/icons/logo.ico
 
-      # ---------- MAC ----------
+      # ----------------------------------------
+      # MACOS
+      # ----------------------------------------
 
       - name: Create macOS DMG
         if: startsWith(matrix.platform, 'mac')
+        shell: bash
         run: |
+          mkdir -p dist
+
           jpackage \
             --input target \
             --name Fixiqo \
-            --main-jar $(ls target/*.jar | xargs -n 1 basename) \
-            --main-class com.defragler.fixiqo.Main \
+            --main-jar Fixiqo-fat.jar \
+            --main-class com.defragler.fixiqo.Launcher \
             --type dmg \
             --dest dist \
             --icon src/main/resources/icons/logo.icns
 
-      # ---------- DEB ----------
+      # ----------------------------------------
+      # LINUX DEPENDENCIES
+      # ----------------------------------------
 
       - name: Install Linux dependencies
-        if: matrix.platform == 'linux'
+        if: startsWith(matrix.os, 'ubuntu')
+        shell: bash
         run: |
           sudo apt update
-          sudo apt install -y fakeroot dpkg-dev
+
+          sudo apt install -y \
+            fakeroot \
+            dpkg-dev \
+            rpm \
+            libfuse2
+
+      # ----------------------------------------
+      # DEB
+      # ----------------------------------------
 
       - name: Create DEB
         if: matrix.platform == 'linux'
+        shell: bash
         run: |
+          mkdir -p dist
+
           jpackage \
             --input target \
             --name Fixiqo \
-            --main-jar $(ls target/*.jar | xargs -n 1 basename) \
-            --main-class com.defragler.fixiqo.Main \
+            --main-jar Fixiqo-fat.jar \
+            --main-class com.defragler.fixiqo.Launcher \
             --type deb \
             --dest dist \
             --icon src/main/resources/icons/logo.png
 
-      # ---------- APPIMAGE ----------
+      # ----------------------------------------
+      # APP IMAGE
+      # ----------------------------------------
 
-      - name: Install AppImage tools
+      - name: Create App Image
         if: matrix.platform == 'appimage'
+        shell: bash
         run: |
-          sudo apt update
-          sudo apt install -y fakeroot libfuse2
+          mkdir -p dist
 
-      - name: Create AppImage
-        if: matrix.platform == 'appimage'
-        run: |
           jpackage \
             --input target \
             --name Fixiqo \
-            --main-jar $(ls target/*.jar | xargs -n 1 basename) \
-            --main-class com.defragler.fixiqo.Main \
+            --main-jar Fixiqo-fat.jar \
+            --main-class com.defragler.fixiqo.Launcher \
             --type app-image \
             --dest dist \
             --icon src/main/resources/icons/logo.png
 
-      # ---------- UPLOAD ----------
+      # ----------------------------------------
+      # VERIFY DIST
+      # ----------------------------------------
+
+      - name: Verify dist
+        shell: bash
+        run: |
+          ls -la dist || true
+
+      # ----------------------------------------
+      # UPLOAD ARTIFACTS
+      # ----------------------------------------
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Fixiqo-${{ matrix.platform }}
+          path: dist/
+
+      # ----------------------------------------
+      # RELEASE UPLOAD
+      # ----------------------------------------
 
       - name: Upload Release Assets
+        if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
           files: dist/**/*
