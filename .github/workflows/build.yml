@@ -3,10 +3,6 @@ name: Build Fixiqo Installers
 on:
   workflow_dispatch:
 
-  push:
-    tags:
-      - "v*.*.*"
-
 permissions:
   contents: write
 
@@ -270,56 +266,3 @@ jobs:
             dist/*.deb
             dist/Fixiqo
           compression-level: 0
-
-  # =========================================================
-  # RELEASE
-  # =========================================================
-
-  publish-release:
-
-    needs:
-      - build-windows
-      - build-macos-intel
-      - build-macos-apple-silicon
-      - build-linux
-
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: write
-
-    steps:
-
-      - name: Download all installers
-        uses: actions/download-artifact@v4
-        with:
-          path: installers
-          merge-multiple: true
-
-      - name: Show downloaded files
-        run: |
-          ls -la installers
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          name: "Fixiqo ${{ github.ref_name }}"
-          body: |
-            ## Fixiqo ${{ github.ref_name }}
-
-            Desktop installers for multiple platforms.
-
-            ### Included installers
-
-            | Platform | File |
-            |---|---|
-            | Windows | `.exe` |
-            | Windows MSI | `.msi` |
-            | macOS Intel | `.dmg` |
-            | macOS Apple Silicon | `.dmg` |
-            | Linux Ubuntu/Debian | `.deb` |
-            | Linux App Image | `app-image` |
-
-          files: installers/*
-          draft: false
-          prerelease: false
